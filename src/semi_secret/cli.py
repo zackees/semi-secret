@@ -1,3 +1,4 @@
+import hashlib
 from pathlib import Path
 
 import click
@@ -10,16 +11,23 @@ DEFAULT_STORAGE_PATH = Path.home() / ".semi_secret"
 DEFAULT_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
 
+# Constants for consistent storage
+STORAGE_KEY = "aicode_openai_config"
+SALT = "aicode_salt"
+
+
 @click.command()
 @click.option("--store", help="Store a secret in salt=key=value format")
-@click.option("--load", help="Load a secret in salt=key format")
+@click.option("--load", help="Load a secret by key")
 def main(store, load):
     """Semi-secret storage utility"""
     if store:
         try:
             salt, rest = store.split("=", 1)
             key, value = rest.split("=", 1)
-            storage = SecretStorage(salt.encode(), salt, DEFAULT_STORAGE_PATH)
+            # Derive a proper length key from the salt
+            derived_key = hashlib.sha256(salt.encode()).hexdigest()
+            storage = SecretStorage(derived_key, salt, DEFAULT_STORAGE_PATH)
             storage.set(key, value)
             click.echo(f"Stored value for key '{key}'")
         except ValueError:
@@ -32,7 +40,9 @@ def main(store, load):
     elif load:
         try:
             salt, key = load.split("=", 1)
-            storage = SecretStorage(salt.encode(), salt, DEFAULT_STORAGE_PATH)
+            # Use same key derivation as store
+            derived_key = hashlib.sha256(salt.encode()).hexdigest()
+            storage = SecretStorage(derived_key, salt, DEFAULT_STORAGE_PATH)
             value = storage.get(key)
             if value is None:
                 click.echo(f"No value found for key '{key}'")

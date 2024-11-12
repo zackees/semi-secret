@@ -1,4 +1,3 @@
-import base64
 import json
 from pathlib import Path
 from typing import Any
@@ -27,21 +26,21 @@ class SecretStorage:
         """
         # Convert key to bytes if it's a string
         if isinstance(key, str):
-            try:
-                # First try to decode the string as base64
-                key_bytes = base64.urlsafe_b64decode(key)
-                # Then verify it's the right length for a Fernet key
-                if len(key_bytes) != 32:
-                    raise ValueError("Invalid key length")
-                key = key.encode()  # Only encode after validation
-            except Exception as e:
-                raise TypeError(
-                    "Invalid key_material: must be valid base64-encoded Fernet key"
-                ) from e
+            key = key.encode()
         elif not isinstance(key, bytes):
             raise TypeError("key must be string or bytes")
 
-        derived_key, _ = derive_key(salt, key)  # Use the salt to derive the final key
+        # Validate key format
+        try:
+            # Try to use it as a Fernet key directly first
+            Fernet(key)
+        except Exception:
+            # If that fails, ensure it's at least 32 bytes for key derivation
+            if len(key) < 32:
+                raise TypeError("key_material must be at least 32 bytes long")
+
+        # Always derive a proper Fernet key from the input key material
+        derived_key, _ = derive_key(salt, key)
         self.fernet = Fernet(derived_key)
         self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)

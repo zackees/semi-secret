@@ -45,5 +45,6 @@ This tool uses Fernet encryption (from the cryptography package) with PBKDF2 key
 
 ## Releases
 
+  * 1.0.2 - Improve usage so that any arbitrary string can be used as the salt
   * 1.0.1 - Usage fixes from the inclusion in `advanced-aicode`
   * 1.0.0 - Initial release
