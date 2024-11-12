@@ -1,12 +1,11 @@
 # semi-secret
 A secure key-value storage utility with command-line interface
 
-[![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
+[![Linting](https://github.com/zackees/semi-secret/actions/workflows/lint.yml/badge.svg)](https://github.com/zackees/semi-secret/actions/workflows/lint.yml) 
 
-[![MacOS_Tests](../../actions/workflows/push_macos.yml/badge.svg)](../../actions/workflows/push_macos.yml)
-[![Ubuntu_Tests](../../actions/workflows/push_ubuntu.yml/badge.svg)](../../actions/workflows/push_ubuntu.yml)
-[![Win_Tests](../../actions/workflows/push_win.yml/badge.svg)](../../actions/workflows/push_win.yml)
-
+[![macOS Tests](https://github.com/zackees/semi-secret/actions/workflows/test_macos.yml/badge.svg)](https://github.com/zackees/semi-secret/actions/workflows/test_macos.yml)
+[![Ubuntu Tests](https://github.com/zackees/semi-secret/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/zackees/semi-secret/actions/workflows/test_ubuntu.yml)
+[![Windows Tests](https://github.com/zackees/semi-secret/actions/workflows/test_win.yml/badge.svg)](https://github.com/zackees/semi-secret/actions/workflows/test_win.yml)
 ## Installation
 
 ```bash
