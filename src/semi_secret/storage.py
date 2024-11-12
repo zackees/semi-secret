@@ -1,26 +1,39 @@
 import json
 from pathlib import Path
 from typing import Any, Optional
+
 from cryptography.fernet import Fernet
+
+from .crypto import derive_key
+
 
 class SecretStorage:
     """Secure key-value storage using Fernet encryption.
-    
+
     Args:
         key (bytes): The encryption key (must be a valid Fernet key)
-        storage_path (Optional[Path]): Custom path for storing encrypted data. 
+        storage_path (Optional[Path]): Custom path for storing encrypted data.
                                      Defaults to ~/.semi_secret/
     """
-    def __init__(self, key: bytes, storage_path: Optional[Path] = None):
-        self.fernet = Fernet(key)
-        self.storage_path = storage_path or Path.home() / '.semi_secret'
+
+    def __init__(self, key: bytes, salt: str, storage_path: Optional[Path] = None):
+        """Initialize storage with key and salt
+
+        Args:
+            key (bytes): The encryption key (must be a valid Fernet key)
+            salt (str): Salt value used for key derivation
+            storage_path (Optional[Path]): Custom path for storing encrypted data
+        """
+        derived_key, _ = derive_key(salt, key)  # Use the salt to derive the final key
+        self.fernet = Fernet(derived_key)
+        self.storage_path = storage_path or Path.home() / ".semi_secret"
         self.storage_path.mkdir(parents=True, exist_ok=True)
-        self._data = {}
+        self._data: dict[str, Any] = {}
         self._load()
 
     def _load(self):
         """Load encrypted data from storage"""
-        storage_file = self.storage_path / 'secrets.enc'
+        storage_file = self.storage_path / "secrets.enc"
         if storage_file.exists():
             encrypted_data = storage_file.read_bytes()
             try:
@@ -31,7 +44,7 @@ class SecretStorage:
 
     def _save(self):
         """Save encrypted data to storage"""
-        storage_file = self.storage_path / 'secrets.enc'
+        storage_file = self.storage_path / "secrets.enc"
         encrypted_data = self.fernet.encrypt(json.dumps(self._data).encode())
         storage_file.write_bytes(encrypted_data)
 
