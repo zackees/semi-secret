@@ -19,5 +19,16 @@ if __name__ == "__main__":
         keywords=KEYWORDS,
         url=URL,
         package_data={"": ["assets/example.txt"]},
-        include_package_data=True)
+        include_package_data=True,
+        extras_require={
+            "dev": [
+                "black",
+                "isort",
+                "mypy",
+                "pytest",
+                "tox",
+                "ruff",
+                "pytest-xdist",
+            ]
+        })
 
