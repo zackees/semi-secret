@@ -42,3 +42,8 @@ Run `./lint.sh` to check code quality using `pylint`, `flake8` and `mypy`.
 ## Security
 
 This tool uses Fernet encryption (from the cryptography package) with PBKDF2 key derivation to securely store your data. Data is stored encrypted in `~/.semi_secret/secrets.enc`.
+
+## Releases
+
+  * 1.0.1 - Usage fixes from the inclusion in `advanced-aicode`
+  * 1.0.0 - Initial release

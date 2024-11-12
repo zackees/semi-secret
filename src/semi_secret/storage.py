@@ -1,6 +1,7 @@
+import base64
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from cryptography.fernet import Fernet
 
@@ -11,22 +12,38 @@ class SecretStorage:
     """Secure key-value storage using Fernet encryption.
 
     Args:
-        key (bytes): The encryption key (must be a valid Fernet key)
-        storage_path (Optional[Path]): Custom path for storing encrypted data.
-                                     Defaults to ~/.semi_secret/
+        key (Union[bytes, str]): The encryption key (must be a valid Fernet key or string)
+        salt (str): Salt value used for key derivation
+        storage_path (Path): Path for storing encrypted data
     """
 
-    def __init__(self, key: bytes, salt: str, storage_path: Optional[Path] = None):
+    def __init__(self, key: bytes | str, salt: str, storage_path: Path):
         """Initialize storage with key and salt
 
         Args:
-            key (bytes): The encryption key (must be a valid Fernet key)
+            key (Union[bytes, str]): The encryption key (must be a valid Fernet key or string)
             salt (str): Salt value used for key derivation
-            storage_path (Optional[Path]): Custom path for storing encrypted data
+            storage_path (Path): Path for storing encrypted data
         """
+        # Convert key to bytes if it's a string
+        if isinstance(key, str):
+            try:
+                # First try to decode the string as base64
+                key_bytes = base64.urlsafe_b64decode(key)
+                # Then verify it's the right length for a Fernet key
+                if len(key_bytes) != 32:
+                    raise ValueError("Invalid key length")
+                key = key.encode()  # Only encode after validation
+            except Exception as e:
+                raise TypeError(
+                    "Invalid key_material: must be valid base64-encoded Fernet key"
+                ) from e
+        elif not isinstance(key, bytes):
+            raise TypeError("key must be string or bytes")
+
         derived_key, _ = derive_key(salt, key)  # Use the salt to derive the final key
         self.fernet = Fernet(derived_key)
-        self.storage_path = storage_path or Path.home() / ".semi_secret"
+        self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)
         self._data: dict[str, Any] = {}
         self._load()
