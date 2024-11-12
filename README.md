@@ -1,5 +1,5 @@
-# template-python-cmd
-A template for quickly making a python lib that has a command line program attached
+# semi-secret
+A secure key-value storage utility with command-line interface
 
 [![Linting](../../actions/workflows/lint.yml/badge.svg)](../../actions/workflows/lint.yml)
 
@@ -7,15 +7,39 @@ A template for quickly making a python lib that has a command line program attac
 [![Ubuntu_Tests](../../actions/workflows/push_ubuntu.yml/badge.svg)](../../actions/workflows/push_ubuntu.yml)
 [![Win_Tests](../../actions/workflows/push_win.yml/badge.svg)](../../actions/workflows/push_win.yml)
 
-Replace `template-python-cmd` and `template_python_cmd` with your command. Run tox until it's
-correct.
+## Installation
 
-To develop software, run `. ./activate.sh`
+```bash
+pip install semi-secret
+```
 
-# Windows
+## Usage
+
+Store a secret:
+```bash
+semi-secret --store "mysalt=mykey=myvalue"
+```
+
+Retrieve a secret:
+```bash
+semi-secret --load "mysalt=mykey"
+```
+
+## Development
+
+To set up the development environment:
+```bash
+. ./activate.sh
+```
+
+### Windows
 
 This environment requires you to use `git-bash`.
 
-# Linting
+### Linting
 
-Run `./lint.sh` to find linting errors using `pylint`, `flake8` and `mypy`.
+Run `./lint.sh` to check code quality using `pylint`, `flake8` and `mypy`.
+
+## Security
+
+This tool uses Fernet encryption (from the cryptography package) with PBKDF2 key derivation to securely store your data. Data is stored encrypted in `~/.semi_secret/secrets.enc`.
