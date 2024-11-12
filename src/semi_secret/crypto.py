@@ -30,5 +30,3 @@ def derive_key(salt: str, key: bytes) -> tuple[bytes, bytes]:
     )
     derived = base64.urlsafe_b64encode(kdf.derive(key))
     return derived, salt_bytes
-
-
