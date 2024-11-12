@@ -11,7 +11,7 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-
+    "cryptography>=3.4.7"
 ]
 # Change this with the version number bump.
 version = "1.0.0"
@@ -44,4 +44,4 @@ ignore_missing_imports = true
 disable_error_code = ["import-untyped"]
 
 [project.scripts]
-blah = "semi_secret.cli:main"
+semi-secret = "semi_secret.cli:main"
