@@ -16,4 +16,5 @@ jobs:
         pip install -e ".[dev]"
     - name: Run Linting
       run: |
-        ./lint.sh
+        ./lint
+      shell: bash
