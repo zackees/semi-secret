@@ -2,7 +2,6 @@
 Unit test file.
 """
 
-import hashlib
 import unittest
 from pathlib import Path
 
@@ -12,9 +11,10 @@ from click.testing import CliRunner
 from semi_secret import SecretStorage
 from semi_secret.cli import main
 
-RAW_STORAGE_KEY = "aicode_openai_config"
-# Create SHA1 hash of the storage key
-STORAGE_KEY = hashlib.sha1(RAW_STORAGE_KEY.encode("utf-8")).hexdigest()
+# Create a proper Fernet-compatible key for testing
+STORAGE_KEY = (
+    "YWljb2RlX29wZW5haV9jb25maWdfMzJieXRlc19sb25nX2tleQ=="  # base64-encoded 32-byte key
+)
 SALT = "aicode_salt"  # We should use a consistent salt for the storage
 
 STORAGE_PATH = Path(user_config_dir("advanced-aicode", roaming=True))

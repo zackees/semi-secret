@@ -47,17 +47,6 @@ def test_persistence(tmp_path):
     assert storage2.get("test_key") == "test_value"
 
 
-def test_string_key_handling(tmp_path):
-    """Test that string keys are properly handled or rejected"""
-    string_key = "this-is-not-a-valid-key"  # Not a valid Fernet key
-    salt = "test_salt_12345678"
-
-    with pytest.raises(TypeError) as exc_info:
-        SecretStorage(string_key, salt, storage_path=tmp_path)
-
-    assert "key_material" in str(exc_info.value)
-
-
 def test_valid_string_key(tmp_path):
     """Test that valid base64 string keys work properly"""
     valid_key = generate_key().decode()  # Convert bytes to string

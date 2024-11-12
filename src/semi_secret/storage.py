@@ -1,10 +1,17 @@
+import base64
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 from cryptography.fernet import Fernet
 
-from .crypto import derive_key
+from .crypto import derive_key, normalize_key
+
+
+def _hash_sha256(data: bytes) -> str:
+    """Calculate SHA256 hash of data"""
+    return hashlib.sha256(data).hexdigest()
 
 
 class SecretStorage:
@@ -24,24 +31,14 @@ class SecretStorage:
             salt (str): Salt value used for key derivation
             storage_path (Path): Path for storing encrypted data
         """
-        # Convert key to bytes if it's a string
-        if isinstance(key, str):
-            key = key.encode()
-        elif not isinstance(key, bytes):
-            raise TypeError("key must be string or bytes")
+        # Normalize the input key first
+        key_material = normalize_key(key)
 
-        # Validate key format
-        try:
-            # Try to use it as a Fernet key directly first
-            Fernet(key)
-        except Exception:
-            # If that fails, ensure it's at least 32 bytes for key derivation
-            if len(key) < 32:
-                raise TypeError("key_material must be at least 32 bytes long")
-
-        # Always derive a proper Fernet key from the input key material
-        derived_key, _ = derive_key(salt, key)
-        self.fernet = Fernet(derived_key)
+        # Derive final key using the normalized key
+        derived_key, _ = derive_key(salt, key_material)
+        # Create Fernet key by base64 encoding the derived key directly
+        fernet_key = base64.urlsafe_b64encode(derived_key)
+        self.fernet = Fernet(fernet_key)
         self.storage_path = storage_path
         self.storage_path.mkdir(parents=True, exist_ok=True)
         self._data: dict[str, Any] = {}
